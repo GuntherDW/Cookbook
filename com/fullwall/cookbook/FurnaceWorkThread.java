@@ -1,6 +1,8 @@
 package com.fullwall.cookbook;
 
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import net.minecraft.server.ContainerFurnace;
 import net.minecraft.server.EntityPlayer;
@@ -9,8 +11,11 @@ import net.minecraft.server.ItemStack;
 import net.minecraft.server.TileEntityFurnace;
 
 import org.bukkit.Material;
+import org.bukkit.block.Furnace;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+
+import javax.xml.transform.Source;
 
 public class FurnaceWorkThread implements Runnable {
 	private CraftPlayer craftPlayer;
@@ -65,6 +70,13 @@ public class FurnaceWorkThread implements Runnable {
 		ItemStack fuel = tileEntity.c_(1);
 		ItemStack result = tileEntity.c_(2);
 		if ((ingredient != null) && FurnaceRecipes.a().a(ingredient.id) != null) {
+            // System.out.println(ingredient.id + " gives you "+FurnaceRecipes.a().a(ingredient.id));
+            Map<Integer, ItemStack> imap = FurnaceRecipes.a().b();
+            /* for(Integer i : imap.keySet())
+            {
+                System.out.println(i+" gives you "+imap.get(i).id);
+            } */
+            
 			if (RecipeManager.containsIngredient(ingredient.id)
 					&& tileEntity.a > 0
 					&& (result == null || result.count != org.bukkit.Material
@@ -75,6 +87,8 @@ public class FurnaceWorkThread implements Runnable {
 					if (maxStackSize == -1 || maxStackSize > 64)
 						maxStackSize = Material.getMaterial(result.id)
 								.getMaxDurability();
+                    
+                    // Cookbook.log.info("Handing out "+result);
 					if (result.count == maxStackSize)
 						return;
 				}

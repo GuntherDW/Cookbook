@@ -43,24 +43,28 @@ public class WorkThread implements Runnable {
 				.getContents()[0];
 		// ((ContainerWorkbench) ep.activeContainer).b.getContents()[0];
 		boolean a = false;
-		if (containerBench.a != null
-				&& Cookbook.instance
-				.getResult
-				(containerBench.a) 
-				!= null) {
-			ItemStack checkResults = Cookbook.instance
-					.getResult(containerBench.a);
-			if (checkResults != null) {
-				a = true;
-			}
-			if (a) {
-				ItemStack is = checkResults;
-				if (is.id == 0)
-					is = null;
-				result = is;
-				containerBench.b.a(0, is);
-				// ((InventoryCraftResult) containerBench.b);
-			}
+		if (containerBench.a != null)
+        {
+            // System.out.println(result);
+            System.out.println("Recipes size : "+Cookbook.getInstance().getRecipes().size());
+
+				if(Cookbook.instance.getResult(containerBench.a) != null) {
+                    ItemStack checkResults = Cookbook.instance.getResult(containerBench.a);
+                    System.out.println(checkResults);
+                    if (checkResults != null) {
+                        a = true;
+                        // System.out.println("Hooray!");
+                    }
+                    if (a) {
+                        ItemStack is = checkResults;
+                        if (is.id == 0)
+                            is = null;
+                        // result = is;
+                        System.out.println(is);
+                        containerBench.b.a(0, is);
+                        // ((InventoryCraftResult) containerBench.b);
+                    }
+                }
 		}
 		if (!craftPlayer.isOnline())
 			kill();

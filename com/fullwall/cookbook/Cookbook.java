@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,6 +43,10 @@ public class Cookbook extends JavaPlugin {
 
 	public void onLoad() {
 	}
+
+    public static CraftResults getInstance() {
+        return instance;
+    }
 
 	public void onEnable() {
 		PluginManager pm = getServer().getPluginManager();
@@ -112,16 +117,18 @@ public class Cookbook extends JavaPlugin {
 			for (Recipe recipe : recipeObjects) {
 				String str = "";
 				if (recipe.isShapeless())
-					str = "§1§1//";
+					str = "ï¿½1ï¿½1//";
 				else
-					str = "§2§1//";
+					str = "ï¿½2ï¿½1//";
 				for (int i = 0; i < recipe.getIDs().size(); ++i) {
 					str += recipe.getIDs().get(i) + ",";
 				}
 				str += "//";
 				str += recipe.getResult().getTypeId() + ",";
 				str += recipe.getResult().getAmount() + ",";
-				str += recipe.getResult().getData().getData() + ",";
+                MaterialData d = recipe.getResult().getData();
+                int data = (d==null?0:d.getData());
+				str += data + ",";
 
 				str += "//";
 				for (int i = 0; i < recipe.getDataValues().size(); ++i) {
@@ -132,17 +139,17 @@ public class Cookbook extends JavaPlugin {
 				count += 1;
 			}
 			if (displayClientCount) {
-				((Player) sender).sendRawMessage("§3§1");
+				((Player) sender).sendRawMessage("ï¿½3ï¿½1");
 			}
 			if (verifyRecipes) {
-				((Player) sender).sendRawMessage("§4§1");
+				((Player) sender).sendRawMessage("ï¿½4ï¿½1");
 			}
 			return true;
 		} else if (command.getName().equals("verifyrecipes")
 				&& sender instanceof Player) {
 			int count = 0;
 			count += recipeObjects.size();
-			((Player) sender).sendRawMessage("§4§2" + count);
+			((Player) sender).sendRawMessage("ï¿½4ï¿½2" + count);
 		}
 		return false;
 	}
@@ -159,11 +166,13 @@ public class Cookbook extends JavaPlugin {
 			int itemID, amount, data;
 			itemID = recipe.getResult().getTypeId();
 			amount = recipe.getResult().getAmount();
-			data = recipe.getResult().getData().getData();
+			MaterialData d = recipe.getResult().getData();
+            data = (d==null?0:d.getData());
 
 			for (int i = 0; i < recipe.getIDs().size(); i++) {
 				int id = recipe.getIDs().get(i);
-				int cdata = recipe.getResult().getData().getData();
+				MaterialData dat = recipe.getResult().getData();
+                int cdata = (dat==null?0:d.getData());
 				if (localCount != 2)
 					row += ChatColor.YELLOW + "" + id + ":" + cdata + "  ";
 				if (localCount == 2) {
@@ -197,34 +206,41 @@ public class Cookbook extends JavaPlugin {
 			if (recipe.getIDs().size() >= 1) {
 				String row = "";
 				int itemID, amount, data;
-				itemID = recipe.getResult().getTypeId();
-				amount = recipe.getResult().getAmount();
-				data = recipe.getResult().getData().getData();
+				if(recipe.getResult() == null)
+                {
+                    sender.sendMessage("ohai, itemid fault!");
+                } else {
+                    itemID = recipe.getResult().getTypeId();
+                    amount = recipe.getResult().getAmount();
+                    MaterialData d = recipe.getResult().getData();
+                    data = (d==null?0:d.getData());
 
-				for (int i = 0; i < recipe.getIDs().size(); i++) {
-					int id = recipe.getIDs().get(i);
-					int cdata = recipe.getResult().getData().getData();
-					if (localCount != 2)
-						row += ChatColor.YELLOW + "" + id + ":" + cdata + "  ";
-					if (localCount == 2) {
-						row += ChatColor.YELLOW + "" + id + ":" + cdata;
-						sender.sendMessage(row);
-						row = "";
-						localCount = -1;
-					}
-					localCount += 1;
-				}
-				if (amount > 1)
-					sender.sendMessage("Result: " + ChatColor.YELLOW + ""
-							+ amount + " " + ChatColor.GREEN
-							+ Material.matchMaterial("" + itemID)
-							+ "s, data value " + data + ".");
-				else
-					sender.sendMessage("Result: " + ChatColor.YELLOW + "1 "
-							+ ChatColor.GREEN
-							+ Material.matchMaterial("" + itemID)
-							+ ", data value " + data + ".");
-			}
+                    for (int i = 0; i < recipe.getIDs().size(); i++) {
+                        int id = recipe.getIDs().get(i);
+                        MaterialData dat = recipe.getResult().getData();
+                        int cdata = (dat==null?0:d.getData());
+                        if (localCount != 2)
+                            row += ChatColor.YELLOW + "" + id + ":" + cdata + "  ";
+                        if (localCount == 2) {
+                            row += ChatColor.YELLOW + "" + id + ":" + cdata;
+                            sender.sendMessage(row);
+                            row = "";
+                            localCount = -1;
+                        }
+                        localCount += 1;
+                    }
+                    if (amount > 1)
+                        sender.sendMessage("Result: " + ChatColor.YELLOW + ""
+                                + amount + " " + ChatColor.GREEN
+                                + Material.matchMaterial("" + itemID)
+                                + "s, data value " + data + ".");
+                    else
+                        sender.sendMessage("Result: " + ChatColor.YELLOW + "1 "
+                                + ChatColor.GREEN
+                                + Material.matchMaterial("" + itemID)
+                                + ", data value " + data + ".");
+                }
+            }
 			count += 1;
 		}
 		sender.sendMessage(ChatColor.AQUA + "-------------------");
@@ -260,7 +276,8 @@ public class Cookbook extends JavaPlugin {
 		for (FurnaceRecipe recipe : furnaceRecipeObjects) {
 			int id = recipe.getIngredient();
 			int itemID = recipe.getResult().getTypeId();
-			int data = recipe.getResult().getData().getData();
+			MaterialData d = recipe.getResult().getData();
+            int data = (d==null?0:d.getData());
 			double cooktime = recipe.getCooktime();
 
 			sender.sendMessage(ChatColor.AQUA + "Cook one " + ChatColor.GREEN
@@ -414,9 +431,12 @@ public class Cookbook extends JavaPlugin {
 					// next recipe
 					org.bukkit.inventory.ItemStack result = null;
 					if (resultID != 0) {
+                        // System.out.println("Resultstack : "+resultID+", 1, "+resultData);
 						ItemStack temp = new ItemStack(resultID, 1, resultData);
-						if (temp != null)
+						if (temp != null) {
 							result = new CraftItemStack(temp);
+                            // System.out.println("Itemstack : "+result);
+                        }
 					}
 					furnaceRecipeObjects.add(new FurnaceRecipe(ingredientID,
 							result, cooktime));
@@ -442,11 +462,12 @@ public class Cookbook extends JavaPlugin {
 			ItemStack result = null;
 			if (fr.getResult().getTypeId() != 0) {
 				if (fr.getResult().getData() != null)
-					result = new ItemStack(fr.getResult().getAmount(), 1, fr
+					result = new ItemStack(fr.getResult().getTypeId(), fr.getResult().getAmount(), fr
 							.getResult().getData().getData());
 				else
-					result = new ItemStack(fr.getResult().getAmount(), 1, 0);
+					result = new ItemStack(fr.getResult().getTypeId(), fr.getResult().getAmount(), 0);
 			}
+            // System.out.println("ingr : "+fr.getIngredient()+", res : "+result);
 			FurnaceRecipes.a().a(fr.getIngredient(), result);
 
 			count += 1;

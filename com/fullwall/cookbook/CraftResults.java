@@ -3,6 +3,7 @@ package com.fullwall.cookbook;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import net.minecraft.server.Block;
 import net.minecraft.server.CraftingRecipe;
@@ -15,7 +16,7 @@ import net.minecraft.server.ShapelessRecipes;
 public class CraftResults {
 	private static CraftResults instance = new CraftResults();
 	@SuppressWarnings("rawtypes")
-	private List b = new ArrayList();
+	private List<CraftingRecipe> b = new ArrayList<CraftingRecipe>();
 
 	public static CraftResults getInstance() {
 		for (Recipe r : Cookbook.recipeObjects) {
@@ -25,8 +26,14 @@ public class CraftResults {
 		return instance;
 	}
 
+    public List<CraftingRecipe> getRecipes()
+    {
+        return b;
+    }
+
 	@SuppressWarnings("unchecked")
 	public void addRecipe(Recipe myRecipe) {
+        CraftingRecipe recipe;
 		if (!myRecipe.isShapeless()) {
 			ItemStack[] stackArray = new ItemStack[9];
 			for (int i = 0; i < myRecipe.getIDs().size(); ++i) {
@@ -39,16 +46,13 @@ public class CraftResults {
 			ItemStack recipeResult = null;
 			if (myRecipe.getResult() != null) {
 				if (myRecipe.getResult().getData() != null)
-					recipeResult = new ItemStack(myRecipe.getResult()
-							.getTypeId(), myRecipe.getResult().getAmount(),
+					recipeResult = new ItemStack(myRecipe.getResult().getTypeId(), myRecipe.getResult().getAmount(),
 							myRecipe.getResult().getData().getData());
 				else
-					recipeResult = new ItemStack(myRecipe.getResult()
-							.getTypeId(), myRecipe.getResult().getAmount(), 0);
+					recipeResult = new ItemStack(myRecipe.getResult().getTypeId(), myRecipe.getResult().getAmount(), 0);
 			}
-			ShapedRecipes recipe = new ShapedRecipes(3, 3, stackArray,
-					recipeResult);
-			this.b.add(recipe);
+            
+            recipe = new ShapedRecipes(3, 3, stackArray, recipeResult);
 		} else {
 			ArrayList<ItemStack> adding = new ArrayList<ItemStack>();
 			for (int j = 0; j < myRecipe.getIDs().size(); ++j) {
@@ -69,8 +73,11 @@ public class CraftResults {
 					recipeResult = new ItemStack(myRecipe.getResult()
 							.getTypeId(), myRecipe.getResult().getAmount(), 0);
 			}
-			this.b.add(new ShapelessRecipes(recipeResult, adding));
+            recipe = new ShapelessRecipes(recipeResult, adding);
 		}
+        System.out.println("Adding it...");
+        this.b.add(recipe);
+        System.out.println("B SIZE : "+this.b.size());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -158,9 +165,11 @@ public class CraftResults {
 	}
 
 	public ItemStack getResult(InventoryCrafting inventorycrafting) {
-		for (int i = 0; i < this.b.size(); ++i) {
+		for (int i = 0; i < this.b.size(); i++) {
+            System.out.println("Checking recipe "+(i+1)+"/"+(b.size()));
 			CraftingRecipe craftingrecipe = (CraftingRecipe) this.b.get(i);
 			if (craftingrecipe.a(inventorycrafting)) {
+                System.out.println("Returning something!");
 				return craftingrecipe.b(inventorycrafting);
 			}
 		}
