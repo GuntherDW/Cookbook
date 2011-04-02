@@ -46,11 +46,11 @@ public class WorkThread implements Runnable {
 		if (containerBench.a != null)
         {
             // System.out.println(result);
-            System.out.println("Recipes size : "+Cookbook.getInstance().getRecipes().size());
+            // System.out.println("Recipes size : "+Cookbook.getInstance().getRecipes().size());
 
 				if(Cookbook.instance.getResult(containerBench.a) != null) {
                     ItemStack checkResults = Cookbook.instance.getResult(containerBench.a);
-                    System.out.println(checkResults);
+                    // System.out.println(checkResults);
                     if (checkResults != null) {
                         a = true;
                         // System.out.println("Hooray!");
@@ -60,7 +60,7 @@ public class WorkThread implements Runnable {
                         if (is.id == 0)
                             is = null;
                         // result = is;
-                        System.out.println(is);
+                        // System.out.println(is);
                         containerBench.b.a(0, is);
                         // ((InventoryCraftResult) containerBench.b);
                     }

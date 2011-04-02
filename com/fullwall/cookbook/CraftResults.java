@@ -14,13 +14,14 @@ import net.minecraft.server.ShapedRecipes;
 import net.minecraft.server.ShapelessRecipes;
 
 public class CraftResults {
-	private static CraftResults instance = new CraftResults();
+	private static CraftResults instance;
 	@SuppressWarnings("rawtypes")
 	private List<CraftingRecipe> b = new ArrayList<CraftingRecipe>();
 
 	public static CraftResults getInstance() {
+        if(instance != null) return instance;
+        instance = new CraftResults();
 		for (Recipe r : Cookbook.recipeObjects) {
-			instance = new CraftResults();
 			instance.addRecipe(r);
 		}
 		return instance;
@@ -75,9 +76,7 @@ public class CraftResults {
 			}
             recipe = new ShapelessRecipes(recipeResult, adding);
 		}
-        System.out.println("Adding it...");
         this.b.add(recipe);
-        System.out.println("B SIZE : "+this.b.size());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -166,10 +165,8 @@ public class CraftResults {
 
 	public ItemStack getResult(InventoryCrafting inventorycrafting) {
 		for (int i = 0; i < this.b.size(); i++) {
-            System.out.println("Checking recipe "+(i+1)+"/"+(b.size()));
 			CraftingRecipe craftingrecipe = (CraftingRecipe) this.b.get(i);
 			if (craftingrecipe.a(inventorycrafting)) {
-                System.out.println("Returning something!");
 				return craftingrecipe.b(inventorycrafting);
 			}
 		}
